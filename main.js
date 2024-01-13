@@ -20,18 +20,7 @@ function createEl(type, props, ...children) {
   };
 }
 
-// const textEl = createTextNode("mini-react");
-const el = createEl("div", { id: "app" }, "hello", 'mini-react');
-
-// const textNode = document.createTextNode("");
-// textNode.nodeValue = textEl.props.nodeValue;
-
-// const dom = document.createElement(el.type);
-// dom.id = el.props.id;
-// dom.appendChild(textNode);
-
-// const root = document.getElementById("root");
-// root.appendChild(dom);
+const App = createEl("div", { id: "app" }, "hello", "mini-react");
 
 const render = (el, root) => {
   const dom =
@@ -50,4 +39,14 @@ const render = (el, root) => {
   root.appendChild(dom);
 };
 
-render(el, document.getElementById("root"));
+const ReactDOM = {
+  createRoot(container) {
+    return { render(app) {
+      render(app, container);
+    } };
+  },
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(App);
+
+
