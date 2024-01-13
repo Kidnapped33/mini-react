@@ -8,7 +8,7 @@ function createTextNode(text) {
   };
 }
 
-function createEl(type, props, ...children) {
+function createElement(type, props, ...children) {
   return {
     type,
     props: {
@@ -39,5 +39,5 @@ const render = (el, root) => {
 
 export default {
   render,
-  createEl,
+  createElement,
 };
