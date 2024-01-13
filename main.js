@@ -1,28 +1,33 @@
-const dom = document.createElement("div");
-dom.id = "app";
-const root = document.getElementById("root");
-root.appendChild(dom);
+// const dom = document.createElement("div");
+// dom.id = "app";
+// const root = document.getElementById("root");
+// root.appendChild(dom);
 
-const textNode = document.createTextNode("");
-textNode.nodeValue = "mini-react";
-dom.appendChild(textNode);
+// const textNode = document.createTextNode("");
+// textNode.nodeValue = "mini-react";
+// dom.appendChild(textNode);
 
-// Extract the same content into a common object
-// "div" and ""
-// .id and .nodeValue
+const textEl = {
+  type: "TEXT_ELEMENT",
+  props: {
+    nodeValue: "mini-react",
+    children: [],
+  },
+};
 
 const el = {
   type: "div",
   props: {
     id: "app",
-    children: [
-      {
-        type: "TEXT_ELEMENT",
-        props: {
-          nodeValue: "mini-react",
-          children: [],
-        },
-      },
-    ],
+    children: [textEl],
   },
 };
+
+const dom = document.createElement(el.type);
+dom.id = el.props.id;
+const root = document.getElementById("root");
+root.appendChild(dom);
+
+const textNode = document.createTextNode(textEl.type);
+textNode.nodeValue = textEl.props.nodeValue;
+dom.appendChild(textNode);
