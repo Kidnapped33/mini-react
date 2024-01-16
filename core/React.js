@@ -27,20 +27,6 @@ const render = (el, container) => {
       children: [el],
     },
   };
-  // const dom =
-  //   el.type === "TEXT_ELEMENT"
-  //     ? document.createTextNode("")
-  //     : document.createElement(el.type);
-
-  // Object.keys(el.props).forEach((key) => {
-  //   key !== "children" && (dom[key] = el.props[key]);
-  // });
-
-  // el.props.children.forEach((child) => {
-  //   render(child, dom);
-  // });
-
-  // root.appendChild(dom);
 };
 
 let nextUnitOfWork = null;
@@ -53,48 +39,53 @@ function workloop(deadline) {
   requestIdleCallback(workloop);
 }
 
-function performUnitOfWork(work) {
-
-  //没有 dom 就创建 dom
-  if(!work.dom){
-  const dom = (work.dom =
-    work.type === "TEXT_ELEMENT"
-      ? document.createTextNode("")
-      : document.createElement(work.type));
-
-  // work.parent.dom.append(dom);
-
-  //* set props
-  Object.keys(work.props).forEach((key) => {
-    key !== "children" && (dom[key] = work.props[key]);
-  });
-
-  work.parent.dom.append(dom);
-
+function createDom(type) {
+  return type === "TEXT_ELEMENT"
+    ? document.createTextNode("")
+    : document.createElement(type);
 }
-  //树转链表
-  const children = work.props.children;
+
+function updateProps(dom, props) {
+  Object.keys(props).forEach((key) => {
+    key !== "children" && (dom[key] = props[key]);
+  });
+}
+
+//树转链表
+function initChildren(fiber) {
+  const children = fiber.props.children;
   let prevChild = null;
   children.forEach((child, index) => {
-    let newChild = {
+    let newFiber = {
       type: child.type,
       props: child.props,
       child: null,
       sibling: null,
-      parent: work,
+      parent: fiber,
       dom: null,
     };
     if (index === 0) {
-      work.child = newChild;
+      fiber.child = newFiber;
     } else {
-      prevChild.sibling = newChild;
+      prevChild.sibling = newFiber;
     }
-    prevChild = newChild;
+    prevChild = newFiber;
   });
+}
+
+function performUnitOfWork(fiber) {
+  if (!fiber.dom) {
+    const dom = (fiber.dom = createDom(fiber.type));
+
+    fiber.parent.dom.append(dom);
+
+    updateProps(dom, fiber.props);
+  }
+  initChildren(fiber);
   //执行完 a 返回 child,没有 child 就返回 sibling，没有就返回叔叔 parent.sibling
-  if (work.child) return work.child;
-  if (work.sibling) return work.sibling;
-  return work.parent?.sibling;
+  if (fiber.child) return fiber.child;
+  if (fiber.sibling) return fiber.sibling;
+  return fiber.parent?.sibling;
 }
 
 requestIdleCallback(workloop);
