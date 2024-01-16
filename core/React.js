@@ -28,10 +28,10 @@ const render = (el, container) => {
     },
   };
 
-  root = nextUnitOfWork
+  root = nextUnitOfWork;
 };
 
-let root = null
+let root = null;
 let nextUnitOfWork = null;
 function workloop(deadline) {
   let shouldYield = false;
@@ -46,18 +46,21 @@ function workloop(deadline) {
   requestIdleCallback(workloop);
 }
 
-function commitRoot(){
+function commitRoot() {
   commitWork(root.child);
-  root = null
+  root = null;
 }
 
-function commitWork(fiber){
-  if(!fiber)return 
-  fiber.parent.dom.append(fiber.dom)
-  commitWork(fiber.child)
-  commitWork(fiber.sibling)
-}
+function commitWork(fiber) {
+  if (!fiber) return;
 
+  let fiberParent = fiber.parent;
+  if (!fiberParent.dom) fiberParent = fiberParent.parent;
+  if (fiber.dom) fiberParent.dom.append(fiber.dom);
+
+  commitWork(fiber.child);
+  commitWork(fiber.sibling);
+}
 
 function createDom(type) {
   return type === "TEXT_ELEMENT"
@@ -72,8 +75,8 @@ function updateProps(dom, props) {
 }
 
 //树转链表
-function initChildren(fiber) {
-  const children = fiber.props.children;
+function initChildren(fiber, children) {
+  // const children = fiber.props.children;
   let prevChild = null;
   children.forEach((child, index) => {
     let newFiber = {
@@ -94,14 +97,20 @@ function initChildren(fiber) {
 }
 
 function performUnitOfWork(fiber) {
-  if (!fiber.dom) {
-    const dom = (fiber.dom = createDom(fiber.type));
-
-    // fiber.parent.dom.append(dom);
-
-    updateProps(dom, fiber.props);
+  let isFunctionComponent = typeof fiber.type === "function";
+  if (isFunctionComponent) {
   }
-  initChildren(fiber);
+  if (!isFunctionComponent) {
+    if (!fiber.dom) {
+      const dom = (fiber.dom = createDom(fiber.type));
+
+      // fiber.parent.dom.append(dom);
+
+      updateProps(dom, fiber.props);
+    }
+  }
+  const children = isFunctionComponent ? [fiber.type()] : fiber.props.children;
+  initChildren(fiber, children);
   //执行完 a 返回 child,没有 child 就返回 sibling，没有就返回叔叔 parent.sibling
   if (fiber.child) return fiber.child;
   if (fiber.sibling) return fiber.sibling;
@@ -132,9 +141,10 @@ export default {
  * 执行到最后一个就结束，可以理解为，没有节点就不执行了
  */
 
-
 /**
  * 可能会有卡顿的问题，可以后面一次性提交
  * commitWork
  * commitRoot
+ *
+ * 支持 function component
  */
