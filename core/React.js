@@ -27,8 +27,11 @@ const render = (el, container) => {
       children: [el],
     },
   };
+
+  root = nextUnitOfWork
 };
 
+let root = null
 let nextUnitOfWork = null;
 function workloop(deadline) {
   let shouldYield = false;
@@ -36,8 +39,25 @@ function workloop(deadline) {
     nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
     shouldYield = deadline.timeRemaining() < 1;
   }
+
+  if (!nextUnitOfWork && root) {
+    commitRoot();
+  }
   requestIdleCallback(workloop);
 }
+
+function commitRoot(){
+  commitWork(root.child);
+  root = null
+}
+
+function commitWork(fiber){
+  if(!fiber)return 
+  fiber.parent.dom.append(fiber.dom)
+  commitWork(fiber.child)
+  commitWork(fiber.sibling)
+}
+
 
 function createDom(type) {
   return type === "TEXT_ELEMENT"
@@ -77,7 +97,7 @@ function performUnitOfWork(fiber) {
   if (!fiber.dom) {
     const dom = (fiber.dom = createDom(fiber.type));
 
-    fiber.parent.dom.append(dom);
+    // fiber.parent.dom.append(dom);
 
     updateProps(dom, fiber.props);
   }
@@ -112,8 +132,9 @@ export default {
  * 执行到最后一个就结束，可以理解为，没有节点就不执行了
  */
 
-// 学到的内容
+
 /**
- * requestIdleCallback(workloop);
- * work.timeRemaining()
+ * 可能会有卡顿的问题，可以后面一次性提交
+ * commitWork
+ * commitRoot
  */
