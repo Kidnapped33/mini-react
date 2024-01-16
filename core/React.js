@@ -55,7 +55,7 @@ function commitWork(fiber) {
   if (!fiber) return;
 
   let fiberParent = fiber.parent;
-  if (!fiberParent.dom) fiberParent = fiberParent.parent;
+  while (!fiberParent.dom) fiberParent = fiberParent.parent;
   if (fiber.dom) fiberParent.dom.append(fiber.dom);
 
   commitWork(fiber.child);

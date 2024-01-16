@@ -4,11 +4,24 @@ import React from "./core/React.js";
 function Counter() {
   return <div>count</div>;
 }
-const App = (
-  <div>
-    mini-react
-    <Counter />
-  </div>
-);
+function CounterContainer() {
+  return <Counter></Counter>;
+}
+
+function App() {
+  return (
+    <div>
+      mini-react
+      <Counter />
+    </div>
+  );
+}
+
+// const App = (
+//   <div>
+//     mini-react
+//     <Counter />
+//   </div>
+// );
 
 export default App;
