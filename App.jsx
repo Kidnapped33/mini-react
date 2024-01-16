@@ -1,27 +1,18 @@
 import React from "./core/React.js";
 
 // const App = React.createEl("div", { id: "app" }, "hello", "mini-react");
-function Counter() {
-  return <div>count</div>;
+function Counter({name}) {
+    return <div>count {name}</div>;
 }
-function CounterContainer() {
-  return <Counter></Counter>;
-}
-
 function App() {
   return (
     <div>
       mini-react
-      <Counter />
+      <Counter name={123}/>
+      <Counter name={456}/>
+      <Counter name={789}/>
     </div>
   );
 }
-
-// const App = (
-//   <div>
-//     mini-react
-//     <Counter />
-//   </div>
-// );
 
 export default App;

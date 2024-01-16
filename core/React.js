@@ -13,9 +13,11 @@ function createElement(type, props, ...children) {
     type,
     props: {
       ...props,
-      children: children.map((child) =>
-        typeof child === "string" ? createTextNode(child) : child
-      ),
+      children: children.map((child) => {
+        const isTextNode =
+          typeof child === "string" || typeof child === "number";
+        return isTextNode ? createTextNode(child) : child;
+      }),
     },
   };
 }
@@ -109,12 +111,20 @@ function performUnitOfWork(fiber) {
       updateProps(dom, fiber.props);
     }
   }
-  const children = isFunctionComponent ? [fiber.type()] : fiber.props.children;
+  const children = isFunctionComponent
+    ? [fiber.type(fiber.props)]
+    : fiber.props.children;
   initChildren(fiber, children);
   //执行完 a 返回 child,没有 child 就返回 sibling，没有就返回叔叔 parent.sibling
   if (fiber.child) return fiber.child;
   if (fiber.sibling) return fiber.sibling;
-  return fiber.parent?.sibling;
+
+  let nextFiber = fiber
+  while(nextFiber){
+    if(nextFiber.sibling) return nextFiber.sibling
+    nextFiber = nextFiber.parent
+  }
+  // return fiber.parent?.sibling;
 }
 
 requestIdleCallback(workloop);
