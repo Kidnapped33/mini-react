@@ -4,8 +4,8 @@ import React from "./core/React.js";
 let count = 33;
 function Counter({ num }) {
   function add() {
-    console.log("clickclick");
-    // count++;
+    count++;
+    React.update()
   }
   return (
     <div>
