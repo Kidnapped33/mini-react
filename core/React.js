@@ -23,18 +23,18 @@ function createElement(type, props, ...children) {
 }
 
 const render = (el, container) => {
-  nextUnitOfWork = {
+  wipRoot = {
     dom: container,
     props: {
       children: [el],
     },
   };
 
-  root = nextUnitOfWork;
+  nextUnitOfWork = wipRoot;
 };
 
 let currentRoot = null;
-let root = null;
+let wipRoot = null;
 let nextUnitOfWork = null;
 function workloop(deadline) {
   let shouldYield = false;
@@ -43,16 +43,16 @@ function workloop(deadline) {
     shouldYield = deadline.timeRemaining() < 1;
   }
 
-  if (!nextUnitOfWork && root) {
+  if (!nextUnitOfWork && wipRoot) {
     commitRoot();
   }
   requestIdleCallback(workloop);
 }
 
 function commitRoot() {
-  commitWork(root.child);
-  currentRoot = root;
-  root = null;
+  commitWork(wipRoot.child);
+  currentRoot = wipRoot;
+  wipRoot = null;
 }
 
 function commitWork(fiber) {
@@ -104,7 +104,7 @@ function updateProps(dom, nextProps, prevProps = {}) {
 }
 
 //树转链表
-function initChildren(fiber, children) {
+function reconcileChildren(fiber, children) {
   let oldFiber = fiber.alternate?.child;
   let prevChild = null;
   children.forEach((child, index) => {
@@ -149,7 +149,7 @@ function initChildren(fiber, children) {
 
 function updateFunctionComponent(fiber) {
   const children = [fiber.type(fiber.props)];
-  initChildren(fiber, children);
+  reconcileChildren(fiber, children);
 }
 
 function updateHostComponent(fiber) {
@@ -159,7 +159,7 @@ function updateHostComponent(fiber) {
   }
 
   const children = fiber.props.children;
-  initChildren(fiber, children);
+  reconcileChildren(fiber, children);
 }
 function performUnitOfWork(fiber) {
   let isFunctionComponent = typeof fiber.type === "function";
@@ -184,13 +184,13 @@ function performUnitOfWork(fiber) {
 requestIdleCallback(workloop);
 
 const update = () => {
-  nextUnitOfWork = {
+  wipRoot = {
     dom: currentRoot.dom,
     props: currentRoot.props,
     alternate: currentRoot,
   };
 
-  root = nextUnitOfWork;
+  nextUnitOfWork = wipRoot;
 };
 
 export default {
