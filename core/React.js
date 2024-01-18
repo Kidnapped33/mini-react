@@ -72,13 +72,19 @@ function createDom(type) {
 
 function updateProps(dom, props) {
   Object.keys(props).forEach((key) => {
-    key !== "children" && (dom[key] = props[key]);
+    if(key !== "children" ){
+      if(key.startsWith('on')){
+        const eventType = key.slice(2).toLowerCase()
+        dom.addEventListener('click', props[key]);
+      }
+      
+      (dom[key] = props[key]);
+    } 
   });
 }
 
 //树转链表
 function initChildren(fiber, children) {
-  // const children = fiber.props.children;
   let prevChild = null;
   children.forEach((child, index) => {
     let newFiber = {

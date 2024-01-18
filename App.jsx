@@ -1,16 +1,27 @@
 import React from "./core/React.js";
 
 // const App = React.createEl("div", { id: "app" }, "hello", "mini-react");
-function Counter({name}) {
-    return <div>count {name}</div>;
+let count = 33;
+function Counter({ num }) {
+  function add() {
+    console.log("clickclick");
+    // count++;
+  }
+  return (
+    <div>
+      count {num}
+      <div>
+        {count}
+        <button onClick={add}>+1</button>
+      </div>
+    </div>
+  );
 }
 function App() {
   return (
     <div>
       mini-react
-      <Counter name={123}/>
-      <Counter name={456}/>
-      <Counter name={789}/>
+      <Counter num={33} />
     </div>
   );
 }
