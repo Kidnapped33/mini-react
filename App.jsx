@@ -1,37 +1,52 @@
 import React from "./core/React.js";
 
 // const App = React.createEl("div", { id: "app" }, "hello", "mini-react");
-let count = 33;
-let flag = false;
-function Counter() {
-  function add() {
-    count++;
-    flag = !flag;
-    React.update()
-  }
+let showBar = false;
 
-  const d = <div>123</div>;
-  // const p = <p>456</p>;
-  function P() {
-    return <p>456</p>
-  }
-  const p = <P />;
+const onShowBar = () => {
+  showBar = !showBar;
+  console.log("showBar");
+  React.update();
+};
+
+// function Foo() {
+//   return <div>foo</div>;
+// }
+
+// function Bar() {
+//   return (
+//     <div>
+//       <div> Bar</div>
+//       <span>children</span>
+//     </div>
+//   );
+// }
+function Counter() {
+  const Foo = (
+    <div>
+     Foo
+      <div>children</div>
+      <div>children</div>
+      <div>children</div>
+    </div>
+  );
+  const Bar = <div>Bar</div>;
 
   return (
     <div>
       <div>
-        {count}
-        <button onClick={add}>+1</button>
-        <span>{flag ? d : p}</span>
+        <button onClick={onShowBar}>showBar</button>
+        <span>{showBar ? Bar : Foo}</span>
       </div>
     </div>
   );
 }
+
 function App() {
   return (
     <div>
       mini-react
-      <Counter num={33} />
+      <Counter />
     </div>
   );
 }
