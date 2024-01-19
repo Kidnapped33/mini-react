@@ -35,8 +35,8 @@ function Counter() {
   return (
     <div>
       <div>
+        <span>{showBar && Bar }</span>
         <button onClick={onShowBar}>showBar</button>
-        <span>{showBar ? Bar : Foo}</span>
       </div>
     </div>
   );
